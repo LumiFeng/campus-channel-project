@@ -7,9 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: github-pages
@@ -18,7 +16,6 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: github-pages
     steps:
       - name: Download static site
         env:
@@ -114,11 +111,10 @@ materials/phase1/report.html""".splitlines()
               print("Downloaded", rel)
           (root / ".nojekyll").write_text("", encoding="utf-8")
           PY
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: _site
-      - name: Deploy Pages
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          force_orphan: true
