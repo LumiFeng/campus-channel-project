@@ -1,4 +1,4 @@
-name: Deploy campus site
+name: Publish campus website
 
 on:
   push:
@@ -10,11 +10,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: github-pages
+  group: publish-site
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Download static site
@@ -26,90 +26,19 @@ jobs:
           import pathlib
           import urllib.parse
           import urllib.request
-
-          base = os.environ["SOURCE_ORIGIN"].rstrip("/") + "/"
-          files = """DEPLOY_README.txt
-assets/images/extension-1.png
-assets/images/extension-2.png
-assets/images/extension-3.png
-assets/images/extension-4.png
-assets/images/extension-6.png
-assets/images/intern-1.jpg
-assets/images/intern-2.jpg
-assets/images/intern-3.jpg
-assets/images/intern-qa.jpg
-assets/images/intern-share-1.jpg
-assets/images/intern-share-2.jpg
-assets/images/intern-share-3.jpg
-assets/images/intern-share-4.jpg
-assets/images/main-no-ip.jpg
-assets/images/main-shaped.jpg
-assets/images/main.jpg
-assets/images/merch-badge.jpg
-assets/images/merch-beads.jpg
-assets/images/merch-pouch.jpg
-assets/images/merch-stickers.jpg
-assets/images/merch-tote.jpg
-assets/images/teacher-day.jpg
-index.html
-materials/phase1/deck-viewer.html
-materials/phase1/decks/campus-recruitment-intro/slide-1.jpg
-materials/phase1/decks/campus-recruitment-intro/slide-2.jpg
-materials/phase1/decks/campus-recruitment-intro/slide-3.jpg
-materials/phase1/decks/campus-recruitment-intro/slide-4.jpg
-materials/phase1/decks/campus-recruitment-intro/slide-5.jpg
-materials/phase1/decks/campus-recruitment-intro/slide-6.jpg
-materials/phase1/decks/host-deck/slide-1.jpg
-materials/phase1/decks/host-deck/slide-10.jpg
-materials/phase1/decks/host-deck/slide-2.jpg
-materials/phase1/decks/host-deck/slide-3.jpg
-materials/phase1/decks/host-deck/slide-4.jpg
-materials/phase1/decks/host-deck/slide-5.jpg
-materials/phase1/decks/host-deck/slide-6.jpg
-materials/phase1/decks/host-deck/slide-7.jpg
-materials/phase1/decks/host-deck/slide-8.jpg
-materials/phase1/decks/host-deck/slide-9.jpg
-materials/phase1/decks/live-course/slide-1.jpg
-materials/phase1/decks/live-course/slide-10.jpg
-materials/phase1/decks/live-course/slide-11.jpg
-materials/phase1/decks/live-course/slide-12.jpg
-materials/phase1/decks/live-course/slide-13.jpg
-materials/phase1/decks/live-course/slide-14.jpg
-materials/phase1/decks/live-course/slide-15.jpg
-materials/phase1/decks/live-course/slide-16.jpg
-materials/phase1/decks/live-course/slide-17.jpg
-materials/phase1/decks/live-course/slide-18.jpg
-materials/phase1/decks/live-course/slide-19.jpg
-materials/phase1/decks/live-course/slide-2.jpg
-materials/phase1/decks/live-course/slide-20.jpg
-materials/phase1/decks/live-course/slide-21.jpg
-materials/phase1/decks/live-course/slide-22.jpg
-materials/phase1/decks/live-course/slide-23.jpg
-materials/phase1/decks/live-course/slide-24.jpg
-materials/phase1/decks/live-course/slide-25.jpg
-materials/phase1/decks/live-course/slide-26.jpg
-materials/phase1/decks/live-course/slide-27.jpg
-materials/phase1/decks/live-course/slide-3.jpg
-materials/phase1/decks/live-course/slide-4.jpg
-materials/phase1/decks/live-course/slide-5.jpg
-materials/phase1/decks/live-course/slide-6.jpg
-materials/phase1/decks/live-course/slide-7.jpg
-materials/phase1/decks/live-course/slide-8.jpg
-materials/phase1/decks/live-course/slide-9.jpg
-materials/phase1/downloads/campus-recruitment-intro.pdf
-materials/phase1/downloads/host-deck.pdf
-materials/phase1/downloads/live-course.pdf
-materials/phase1/report.html""".splitlines()
-          root = pathlib.Path("_site")
+          
+          base = os.environ['SOURCE_ORIGIN'].rstrip('/') + '/'
+          files = ["DEPLOY_README.txt","assets/images/extension-1.png","assets/images/extension-2.png","assets/images/extension-3.png","assets/images/extension-4.png","assets/images/extension-6.png","assets/images/intern-1.jpg","assets/images/intern-2.jpg","assets/images/intern-3.jpg","assets/images/intern-qa.jpg","assets/images/intern-share-1.jpg","assets/images/intern-share-2.jpg","assets/images/intern-share-3.jpg","assets/images/intern-share-4.jpg","assets/images/main-no-ip.jpg","assets/images/main-shaped.jpg","assets/images/main.jpg","assets/images/merch-badge.jpg","assets/images/merch-beads.jpg","assets/images/merch-pouch.jpg","assets/images/merch-stickers.jpg","assets/images/merch-tote.jpg","assets/images/teacher-day.jpg","index.html","materials/phase1/deck-viewer.html","materials/phase1/decks/campus-recruitment-intro/slide-1.jpg","materials/phase1/decks/campus-recruitment-intro/slide-2.jpg","materials/phase1/decks/campus-recruitment-intro/slide-3.jpg","materials/phase1/decks/campus-recruitment-intro/slide-4.jpg","materials/phase1/decks/campus-recruitment-intro/slide-5.jpg","materials/phase1/decks/campus-recruitment-intro/slide-6.jpg","materials/phase1/decks/host-deck/slide-1.jpg","materials/phase1/decks/host-deck/slide-10.jpg","materials/phase1/decks/host-deck/slide-2.jpg","materials/phase1/decks/host-deck/slide-3.jpg","materials/phase1/decks/host-deck/slide-4.jpg","materials/phase1/decks/host-deck/slide-5.jpg","materials/phase1/decks/host-deck/slide-6.jpg","materials/phase1/decks/host-deck/slide-7.jpg","materials/phase1/decks/host-deck/slide-8.jpg","materials/phase1/decks/host-deck/slide-9.jpg","materials/phase1/decks/live-course/slide-1.jpg","materials/phase1/decks/live-course/slide-10.jpg","materials/phase1/decks/live-course/slide-11.jpg","materials/phase1/decks/live-course/slide-12.jpg","materials/phase1/decks/live-course/slide-13.jpg","materials/phase1/decks/live-course/slide-14.jpg","materials/phase1/decks/live-course/slide-15.jpg","materials/phase1/decks/live-course/slide-16.jpg","materials/phase1/decks/live-course/slide-17.jpg","materials/phase1/decks/live-course/slide-18.jpg","materials/phase1/decks/live-course/slide-19.jpg","materials/phase1/decks/live-course/slide-2.jpg","materials/phase1/decks/live-course/slide-20.jpg","materials/phase1/decks/live-course/slide-21.jpg","materials/phase1/decks/live-course/slide-22.jpg","materials/phase1/decks/live-course/slide-23.jpg","materials/phase1/decks/live-course/slide-24.jpg","materials/phase1/decks/live-course/slide-25.jpg","materials/phase1/decks/live-course/slide-26.jpg","materials/phase1/decks/live-course/slide-27.jpg","materials/phase1/decks/live-course/slide-3.jpg","materials/phase1/decks/live-course/slide-4.jpg","materials/phase1/decks/live-course/slide-5.jpg","materials/phase1/decks/live-course/slide-6.jpg","materials/phase1/decks/live-course/slide-7.jpg","materials/phase1/decks/live-course/slide-8.jpg","materials/phase1/decks/live-course/slide-9.jpg","materials/phase1/downloads/campus-recruitment-intro.pdf","materials/phase1/downloads/host-deck.pdf","materials/phase1/downloads/live-course.pdf","materials/phase1/report.html"]
+          root = pathlib.Path('_site')
           for rel in files:
               target = root / rel
               target.parent.mkdir(parents=True, exist_ok=True)
-              url = base + urllib.parse.quote(rel, safe="/")
-              request = urllib.request.Request(url, headers={"User-Agent": "GitHub-Actions"})
+              url = base + urllib.parse.quote(rel, safe='/')
+              request = urllib.request.Request(url, headers={'User-Agent': 'GitHub-Actions'})
               with urllib.request.urlopen(request, timeout=120) as response:
                   target.write_bytes(response.read())
-              print("Downloaded", rel)
-          (root / ".nojekyll").write_text("", encoding="utf-8")
+              print('Downloaded', rel)
+          (root / '.nojekyll').write_text('', encoding='utf-8')
           PY
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
